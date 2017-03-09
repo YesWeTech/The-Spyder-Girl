@@ -1,2 +1,0 @@
-genderator==0.2.7.9
-facebook-sdk==2.0.0
