@@ -29,7 +29,7 @@ With this project we'd like to study our social network in _Facebook_ and _Twitt
 5. Install requeriments
 
     ```bash
-    $ pip install requeriments.txt
+    $ pip install -r requeriments.txt
     ```
 
 
@@ -65,5 +65,5 @@ Con este proyecto nos gustaría estudiar nuestras redes sociales, _Facebook_ y _
 5. Instala los requerimientos
 
     ```bash
-    $ pip install requeriments.txt
+    $ pip install -r requeriments.txt
     ```
