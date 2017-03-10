@@ -1,19 +1,16 @@
-title: John Smith
-description: My Personal Blog
-author: John Smith
+title: The Spyder Girl
+description: Nuestro proyecto para el certamen de proyectos libres de la OSL.
+author: Geek & Tech Girls
 logo: /static/img/avatar.png
-github: https://github.com/ashutosh2k12
-about: Freelance developer
+github: https://github.com/geekandtechgirls
+about: Extracting information from our social media.
 
 baseurl: ""
-url: "https://codeasashu.github.io/hcz-jekyll-blog"
+url: "https://geekandtechgirls.github.io/The-Spyder-Girl"
 
-disqus_shortname: aboutashu
-google_analytics: UA-72862926-1
 
 share:
-  twitter_username: \#
-  fb_appid: 000000000000
+  twitter_username: geekandtechgirl
 
 
 enableTags: true
