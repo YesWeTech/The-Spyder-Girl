@@ -27,3 +27,6 @@ data = graph.get_object(id="me", fields="feed{likes{id,name}},notifications{from
 {% endhighlight  %}
 
 Como habréis notado, tenemos la clave de acceso definida como variable de entorno :wink:
+
+## Paging
+La llamada a la API sólo nos da un número limitado de elementos, para poder extraer el máximo número de elementos posibles tenemos que hacer varias llamadas sucesivas indicando _por dónde nos quedamos en la última_. Para ello, hemos seguido esta [pregunta](http://stackoverflow.com/questions/28589239/python-facebook-api-cursor-pagination#28590136) de _Stackoverflow_.
