@@ -7,4 +7,5 @@ group :jekyll_plugins do
   gem 'jekyll-watch'
   gem 'kramdown'
   gem 'rouge'
+  gem 'jemoji'
 end
