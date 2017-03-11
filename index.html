@@ -27,7 +27,7 @@ var y = d3.scale.linear()
 var chart = d3.select(".chart")
 .attr("height", height);
 
-d3.tsv("twiter.csv", type, function(error, data) {
+d3.tsv("twitter.csv", type, function(error, data) {
   y.domain([0, d3.max(data, function(d) { return d.retweet; })]);
 
   chart.attr("width", barWidth * data.length);

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>The Spyder Girl</title>
+    <description>Nuestro proyecto para el certamen de proyectos libres de la OSL.</description>
+    <link>https://geekandtechgirls.github.io/The-Spyder-Girl/</link>
+    <atom:link href="https://geekandtechgirls.github.io/The-Spyder-Girl/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sat, 11 Mar 2017 14:11:43 +0100</pubDate>
+    <lastBuildDate>Sat, 11 Mar 2017 14:11:43 +0100</lastBuildDate>
+    <generator>Jekyll v3.1.6</generator>
+    
+      <item>
+        <title>Extrayendo los datos de Twitter</title>
+        <description>&lt;h1 id=&quot;api-rest-de-twitter-y-tweepy&quot;&gt;API REST de Twitter y Tweepy&lt;/h1&gt;
+
+&lt;p&gt;Twitter ofrece una &lt;em&gt;API&lt;/em&gt; muy fácil de usar que nos permite extraer una gran cantidad de información útil sobre un usuario, sus tweets, retweets, quién ha hecho retweet, y un montón de cosas más. Pero, existe una librería para Python llamada &lt;a href=&quot;http://www.tweepy.org/&quot;&gt;Tweepy&lt;/a&gt; que nos permite manejar la API desde Python de una forma muy cómoda y sencilla&lt;/p&gt;
+
+&lt;p&gt;Para instalar esta librería, podemos instalarla gracias a &lt;strong&gt;&lt;em&gt;pip&lt;/em&gt;&lt;/strong&gt; de la siguiente manera:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;pip install tweepy&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Una vez instalado, ya podremos empezar a trabajar con Twitter y Python.&lt;/p&gt;
+
+&lt;h1 id=&quot;conectando-con-twitter&quot;&gt;Conectando con Twitter&lt;/h1&gt;
+
+&lt;p&gt;Antes de comenzar a extraer datos, es necesario obtener unas claves de acceso para Twitter. Esto se puede hacer accediendo a la página de &lt;a href=&quot;https://apps.twitter.com/&quot;&gt;Twitter Aps&lt;/a&gt;, creando una nueva &lt;em&gt;app&lt;/em&gt; y obteniendo las claves siguientes:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Consumer Key (API Key)&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Consumer Secret Key (API Secret)&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Access Token&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Access Token Secret&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Una vez que tengamos nuestras claves, ya podremos conectarnos a la api a través de Python.&lt;/p&gt;
+
+&lt;p&gt;Una buena práctica a la hora de tratar con claves de acceso privadas, es no ponerlas en nuestro código, por si accidentalmente, estas claves se suben al repositorio, quedando totalmente expuestas. La solución a esto, es poner las claves como variables de entorno en nuestro &lt;em&gt;bash&lt;/em&gt;, realizando un export.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;TWITTER_CONSUMER_KEY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;clave_de_twitter&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Una vez exportadas las cuatro claves como variables de entorno, podemos leerlas desde Python importando del módulo &lt;code class=&quot;highlighter-rouge&quot;&gt;os&lt;/code&gt; la función &lt;code class=&quot;highlighter-rouge&quot;&gt;environ&lt;/code&gt; para poder leer las variables de entorno, pasando solo como un string el nombre de la variable.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;tweepy&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# Manage Twitter API&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pandas&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pd&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# to create dataframes&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;os&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;environ&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# To get the environment variables&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Use your Twitter API keys to connect&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;auth&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tweepy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;OAuthHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;TWITTER_CONSUMER_KEY&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+                           &lt;span class=&quot;n&quot;&gt;environ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;TWITTER_CONSUMER_SECRET&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;auth&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_access_token&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;TWITTER_ACCESS_TOKEN&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+                      &lt;span class=&quot;n&quot;&gt;environ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;TWITTER_ACCESS_TOKEN_SECRET&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;api&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tweepy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;API&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;auth_handler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;auth&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wait_on_rate_limit_notify&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                 &lt;span class=&quot;n&quot;&gt;wait_on_rate_limit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Con esto, ya estaremos conectados a la API de Twitter para poder extaer los datos que necesitemos.&lt;/p&gt;
+
+&lt;p&gt;Además de esto, hemos importado &lt;code class=&quot;highlighter-rouge&quot;&gt;pandas&lt;/code&gt; para poder crear DataFrames para manejar los datos con una mayor comodidad y poder representarlos de una manera más fácil.&lt;/p&gt;
+
+&lt;p&gt;La extracción de los datos de los tweets, se realiza con la función &lt;code class=&quot;highlighter-rouge&quot;&gt;get_timeline_data&lt;/code&gt;, en la que extraeremos de nuestro timeline el &lt;strong&gt;id&lt;/strong&gt; del tweet, &lt;strong&gt;número de Retweets&lt;/strong&gt;, &lt;strong&gt;número de Me Gusta&lt;/strong&gt; y la &lt;strong&gt;fecha&lt;/strong&gt; del tweet, y generamos un DataFrame con estos datos.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get_timeline_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;tweets_list&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;# construct the dataframe&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tweet&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tweepy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Cursor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user_timeline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;include_rts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;items&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;tweets_list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tweet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tweet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_json&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&#39;favorite_count&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]),&lt;/span&gt;
+                            &lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tweet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_json&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&#39;retweet_count&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tweet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;created_at&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;tweets&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DataFrame&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tweets_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                          &lt;span class=&quot;n&quot;&gt;columns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&#39;id&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&#39;like&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&#39;retweet&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&#39;date&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tweets&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Con esto, tendremos nuestro DataFrame listo para ser usado.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 11 Mar 2017 00:00:00 +0100</pubDate>
+        <link>https://geekandtechgirls.github.io/The-Spyder-Girl/project/2017/03/11/extrayendo-datos-twitter.html</link>
+        <guid isPermaLink="true">https://geekandtechgirls.github.io/The-Spyder-Girl/project/2017/03/11/extrayendo-datos-twitter.html</guid>
+        
+        
+        <category>project</category>
+        
+      </item>
+    
+      <item>
+        <title>Infiriendo el género de una persona a partir de su nombre</title>
+        <description>&lt;h1 id=&quot;nuestro-problema&quot;&gt;Nuestro problema&lt;/h1&gt;
+&lt;p&gt;A pesar de que &lt;em&gt;Facebook&lt;/em&gt; da estadísticas a los administradores de las páginas, queríamos obtener nuestros propios datos. Ahora bien, debido a la política de privacidad de la empresa los datos que podemos obtener de las personas que interactúan con nosotras son sólo &lt;strong&gt;su nombre&lt;/strong&gt;, su id de Facebook y poco más.&lt;/p&gt;
+
+&lt;p&gt;En ese momento nos preguntamos, ¿habrá alguna forma de saber el género de una persona a partir de su nombre? Y buscando un poco por internet encontramos &lt;a href=&quot;https://github.com/davidmogar/genderator&quot;&gt;genderator&lt;/a&gt;! :heart:&lt;/p&gt;
+
+&lt;h1 id=&quot;cdigo&quot;&gt;Código&lt;/h1&gt;
+&lt;p&gt;¿Cómo usar esta librería? Muy simple: debemos crear una instancia de la clase &lt;code class=&quot;highlighter-rouge&quot;&gt;Parser&lt;/code&gt; y llamar al método &lt;code class=&quot;highlighter-rouge&quot;&gt;guess_gender&lt;/code&gt; pasándole el nombre como parámetro, ¿fácil no?&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;genderator&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;guesser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;genderator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;guesser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;guess_gender&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Si el objeto &lt;code class=&quot;highlighter-rouge&quot;&gt;guesser&lt;/code&gt; ha encontrado una respuesta, devolverá un &lt;code class=&quot;highlighter-rouge&quot;&gt;OrderedDict&lt;/code&gt; con los datos de la respuesta. En caso contario, no devolverá nada. Debemos controlar esta situación, haciendo que, en caso de no devolver nada, se devuelva un &lt;code class=&quot;highlighter-rouge&quot;&gt;OrderedDict&lt;/code&gt; con género desconocido:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;genderator&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;guesser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;genderator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;guesser&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;guess_gender&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;OrderedDict&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&#39;names&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&#39;gender&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&#39;Unknown&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Por último, debido a que queremos hacer un &lt;em&gt;gráfico de barras&lt;/em&gt; con el número de personas de cada sexo que interacciona con nosotras, debemos hacer un diccionario más reducido en el que se recojan el número de interacciones obtenidas para cada género. Para ello, hemos definido la siguiente función:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;export_to_json&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&#39;Female&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&#39;Male&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&#39;Unknown&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&#39;gender&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+</description>
+        <pubDate>Fri, 10 Mar 2017 00:00:00 +0100</pubDate>
+        <link>https://geekandtechgirls.github.io/The-Spyder-Girl/project/2017/03/10/genero-nombre.html</link>
+        <guid isPermaLink="true">https://geekandtechgirls.github.io/The-Spyder-Girl/project/2017/03/10/genero-nombre.html</guid>
+        
+        
+        <category>project</category>
+        
+      </item>
+    
+      <item>
+        <title>Extrayendo datos de Facebook</title>
+        <description>&lt;h1 id=&quot;sobre-la-api-graph&quot;&gt;Sobre la API Graph&lt;/h1&gt;
+
+&lt;p&gt;La &lt;a href=&quot;https://developers.facebook.com/docs/graph-api/overview&quot;&gt;API Graph&lt;/a&gt; de Facebook es la API por referencia para extraer información de esta red social. Podéis explorar las posibilidades que ofrece con su &lt;a href=&quot;https://developers.facebook.com/tools/explorer&quot;&gt;explorador&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;En nuestro caso, vamos a centrarnos en obtener el &lt;em&gt;feed&lt;/em&gt; (posts que publicamos desde nuestra página) y, para cada post, el nombre de las personas que han dado me gusta a ese post.&lt;/p&gt;
+
+&lt;h1 id=&quot;cdigo&quot;&gt;Código&lt;/h1&gt;
+&lt;p&gt;Para poder trabajar con esta API de forma sencilla se utiliza la librería &lt;a href=&quot;https://github.com/mobolic/facebook-sdk&quot;&gt;facebook-sdk&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;La forma de trabajar es bastante sencilla: creamos un objeto &lt;code class=&quot;highlighter-rouge&quot;&gt;facebook.Graph.API&lt;/code&gt; pasándole como parámetro nuestra clave de acceso y, a partir de ahí, tenemos un objeto &lt;code class=&quot;highlighter-rouge&quot;&gt;graph&lt;/code&gt; al que podemos llamar usando los mismos métodos que en el explorador de la API.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;facebook&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;os&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;environ&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# connect to facebook&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;facebook&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GraphAPI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;access_token&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&#39;FACEBOOK_ACCESS_TOKEN&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&#39;2.7&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# download notifications and likes from facebook.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;graph&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;me&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;feed{likes{id,name}},notifications{from}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Como habréis notado, tenemos la clave de acceso definida como variable de entorno :wink:&lt;/p&gt;
+
+&lt;h2 id=&quot;paging&quot;&gt;Paging&lt;/h2&gt;
+&lt;p&gt;La llamada a la API sólo nos da un número limitado de elementos, para poder extraer el máximo número de elementos posibles tenemos que hacer varias llamadas sucesivas indicando &lt;em&gt;por dónde nos quedamos en la última&lt;/em&gt;. Para ello, hemos seguido esta &lt;a href=&quot;http://stackoverflow.com/questions/28589239/python-facebook-api-cursor-pagination#28590136&quot;&gt;pregunta&lt;/a&gt; de &lt;em&gt;Stackoverflow&lt;/em&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 10 Mar 2017 00:00:00 +0100</pubDate>
+        <link>https://geekandtechgirls.github.io/The-Spyder-Girl/project/2017/03/10/extrayendo-datos-facebook.html</link>
+        <guid isPermaLink="true">https://geekandtechgirls.github.io/The-Spyder-Girl/project/2017/03/10/extrayendo-datos-facebook.html</guid>
+        
+        
+        <category>project</category>
+        
+      </item>
+    
+  </channel>
+</rss>
