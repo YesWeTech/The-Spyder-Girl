@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.chart rect {
+  fill: steelblue;
+}
+
+.chart text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+</style>
+<svg class="chart"></svg>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script>
+
+
+var height = 500
+barWidth = 20;
+
+var y = d3.scale.linear()
+    .range([0, height]);
+
+var chart = d3.select(".chart")
+.attr("height", height);
+
+d3.tsv("twiter.csv", type, function(error, data) {
+  y.domain([0, d3.max(data, function(d) { return d.retweet; })]);
+
+  chart.attr("width", barWidth * data.length);
+
+  var bar = chart.selectAll("g")
+    .data(data)
+    .enter().append("g")
+    .attr("transform", function(d, i) { return "translate(" + i * barWidth + ",0)"; });
+
+  bar.append("rect")
+      .attr("y", function(d) { return height - y(d.retweet); })
+      .attr("height", function(d) { return  y(d.retweet); })
+      .attr("width", barWidth - 1);
+
+  bar.append("text")
+      .attr("x", barWidth / 2)
+      .attr("y", function(d) { return height - y(d.retweet) + 3; })
+      .attr("dy", ".75em")
+      .text(function(d) { return d.retweet; });
+
+
+
+});
+
+
+function type(d) {
+  d.value = +d.value; // coerce to number
+  return d;
+}
+
+</script>
