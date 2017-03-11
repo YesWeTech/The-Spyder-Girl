@@ -1,3 +1,5 @@
 genderator==0.2.7.9
 facebook-sdk==2.0.0
 tweepy==3.5.0
+pandas==0.19.2
+requests==2.13.0
