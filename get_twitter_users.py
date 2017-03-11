@@ -31,7 +31,7 @@ api = tweepy.API(auth_handler=auth, wait_on_rate_limit_notify=True,
                  wait_on_rate_limit=True)
 
 
-def get_time_line_retweeters():
+def get_timeline_data():
 
     tweets_list = []
     # construct the dataframe
@@ -46,4 +46,4 @@ def get_time_line_retweeters():
     return tweets
 
 
-print(get_time_line_retweeters())
+print(get_timeline_data())
