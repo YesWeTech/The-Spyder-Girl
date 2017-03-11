@@ -43,5 +43,5 @@ def export_to_json(data_list):
     for d in data_list:
         results[d['gender']] += 1
 
-return results
+    return results
 {% endhighlight %}
