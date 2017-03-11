@@ -34,11 +34,8 @@ api = tweepy.API(auth_handler=auth, wait_on_rate_limit_notify=True,
 def get_time_line_retweeters():
 
     tweets_list = []
-    # get the tweets of our timeline
-    timeline = api.user_timeline(
-        by_screenname='geekantechgirl', count=200, include_rts=False)
     # construct the dataframe
-    for tweet in timeline:
+    for tweet in tweepy.Cursor(api.user_timeline, include_rts=False).items():
 
         tweets_list.append([str(tweet.id), int(tweet._json['favorite_count']),
                             str(tweet._json['retweet_count']), tweet.created_at])
