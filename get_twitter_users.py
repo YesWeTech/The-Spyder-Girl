@@ -46,5 +46,4 @@ def get_timeline_data():
     return tweets
 
 data = get_timeline_data()
-data.to_csv("twiter.csv", sep='\t')
-print(data)
+data.to_csv("twitter.csv", sep='\t', index=False)
