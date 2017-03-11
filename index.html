@@ -21,18 +21,23 @@ var y = d3.scaleLinear()
 
 var line = d3.line()
     .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.retweet); });
+    .y(function(d) { return y(d.retweet); })
+
+var line1 = d3.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.like); })
 
 d3.tsv("twitter.csv", function(d) {
   d.date = parseTime(d.date);
   d.retweet = +d.retweet;
+  d.like = +d.like;
   return d;
 }, function(error, data) {
   if (error) throw error;
 
   x.domain(d3.extent(data, function(d) { return d.date; }));
   y.domain(d3.extent(data, function(d) { return d.retweet; }));
-
+  
   g.append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x))
@@ -57,5 +62,14 @@ d3.tsv("twitter.csv", function(d) {
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 1.5)
       .attr("d", line);
+
+  g.append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "firebrick")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line1);
 });
-o</script>
+</script>
