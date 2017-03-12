@@ -19,10 +19,12 @@ var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
 var line = d3.line()
+    .curve(d3.curveCardinal)
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.retweet); })
 
 var line1 = d3.line()
+    .curve(d3.curveCardinal)
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.like); })
 
@@ -66,7 +68,7 @@ d3.tsv("twitter.csv", function(d) {
       .attr("style", "fill:firebrick")
       .text("Likes");
 
-  g.append("path")
+  var path = g.append("path")
       .datum(data)
       .attr("fill", "none")
       .attr("stroke", "limegreen")
@@ -75,7 +77,8 @@ d3.tsv("twitter.csv", function(d) {
       .attr("stroke-width", 1.5)
       .attr("d", line);
 
-  g.append("path")
+
+  var path2 = g.append("path")
       .datum(data)
       .attr("fill", "none")
       .attr("stroke", "firebrick")
@@ -83,5 +86,23 @@ d3.tsv("twitter.csv", function(d) {
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 1.5)
       .attr("d", line1);
+
+  var totalLength = path.node().getTotalLength();
+
+  path
+    .attr("stroke-dasharray", totalLength + " " + totalLength)
+    .attr("stroke-dashoffset", totalLength)
+    .transition()
+      .duration(2000)
+      .attr("stroke-dashoffset", 0);
+
+  var totalLength2 = path2.node().getTotalLength();
+
+  path2
+    .attr("stroke-dasharray", totalLength2 + " " + totalLength2)
+    .attr("stroke-dashoffset", totalLength2)
+    .transition()
+      .duration(2000)
+      .attr("stroke-dashoffset", 0);
 });
 </script>
