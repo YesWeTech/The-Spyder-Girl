@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <title>The Spyder Girl</title>
-<svg width="960" height="500"></svg>
+<svg height="500"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
-
+var data_w = 5;
 var svg = d3.select("svg"),
     margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = +svg.attr("width") - margin.left - margin.right,
@@ -13,9 +13,8 @@ var svg = d3.select("svg"),
 
 var parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
-var x = d3.scaleTime()
-    .rangeRound([0, width]);
 
+var x = d3.scaleTime();
 var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
@@ -34,7 +33,8 @@ d3.tsv("twitter.csv", function(d) {
   return d;
 }, function(error, data) {
   if (error) throw error;
-
+  svg.attr("width", data_w*data.length);
+  x.rangeRound([0, data_w*data.length]);
   x.domain(d3.extent(data, function(d) { return d.date; }));
   y.domain(d3.extent(data, function(d) { return d.retweet; }));
   
@@ -52,7 +52,19 @@ d3.tsv("twitter.csv", function(d) {
       .attr("y", 6)
       .attr("dy", "0.71em")
       .attr("text-anchor", "end")
+      .attr("style", "fill: limegreen")
       .text("Retweets");
+
+  g.append("g")
+      .call(d3.axisLeft(y))
+    .append("text")
+      .attr("fill", "#000")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 20)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", "end")
+      .attr("style", "fill:firebrick")
+      .text("Likes");
 
   g.append("path")
       .datum(data)
