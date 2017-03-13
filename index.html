@@ -36,7 +36,7 @@ d3.tsv("twitter.csv", function(d) {
 }, function(error, data) {
   if (error) throw error;
   svg.attr("width", data_w*data.length);
-  x.rangeRound([0, data_w*data.length]);
+  x.rangeRound([data_w*data.length,0]);
   x.domain(d3.extent(data, function(d) { return d.date; }));
   y.domain(d3.extent(data, function(d) { return d.retweet; }));
   
@@ -74,7 +74,7 @@ d3.tsv("twitter.csv", function(d) {
       .attr("stroke", "limegreen")
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 2)
       .attr("d", line);
 
 
@@ -84,7 +84,7 @@ d3.tsv("twitter.csv", function(d) {
       .attr("stroke", "firebrick")
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 2)
       .attr("d", line1);
 
   var totalLength = path.node().getTotalLength();
